@@ -1,5 +1,4 @@
 package com.scheduler.demo;
-import java.util.ArrayList;
 
 public class User {
 	private String Name;
@@ -29,5 +28,13 @@ public class User {
 	public int getID() {
 		return user_id;
 	}
-
+	public void setName(String Name) {
+		this.Name = Name;
+	}
+	public void setMajor(String Major) {
+		this.Major = Major;
+	}
+	public void setAge(int Age) {
+		this.Age = Age;
+	}
 }
