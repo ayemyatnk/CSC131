@@ -43,18 +43,24 @@ public class SchedulerApplication {
     	id++;
     }
     
-    //Currently require all param to operate, need to be improve
     @PutMapping ("/api/user/{user_id}")
-    public void edit_user(@PathVariable(value = "user_id") int Id,@RequestParam String name, String major, int age) {
+    public void edit_user(@PathVariable(value = "user_id") int Id,@RequestParam (required=false) String name, @RequestParam (required=false) String major, @RequestParam (required=false) int age) {
     	for(int i = 0; i < userList.size(); i++) {
     		if (userList.get(i).getID() == Id) {
-    			userList.get(i).setName(name);
-    			userList.get(i).setMajor(major);
-    			userList.get(i).setAge(age);
+    				userList.get(i).setName(name);
+    				userList.get(i).setMajor(major);
+    				userList.get(i).setAge(age);
     		}
     	}
     }
-    /*  To be implemented 
+
     @DeleteMapping ("/api/user/{user_id}")
-	*/
+    public void delete_user(@PathVariable(value = "user_id") int Id) {
+    	for(int i = 0; i < userList.size(); i++) {
+    		if (userList.get(i).getID() == Id) {
+    			userList.remove(i);
+    		}
+    	}
+    }
+
 }
