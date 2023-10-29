@@ -16,6 +16,8 @@ public class SchedulerApplication {
 	//List is temporary, for testing purpose
 	ArrayList<User> userList = new ArrayList<User>();
 	int id = 0;
+	ArrayList<Time> timeList = new ArrayList<Time>();
+	int time_id = 0;
 	
     public static void main(String[] args) {
       SpringApplication.run(SchedulerApplication.class, args);
@@ -62,5 +64,21 @@ public class SchedulerApplication {
     		}
     	}
     }
-
+    
+    @GetMapping ("/api/user/{user_id}/availability")
+    public List<Time> get_time(@PathVariable(value = "user_id")int Id) {
+    	ArrayList<Time> tempList = new ArrayList<Time>();
+    	for(int i = 0; i < timeList.size(); i++) {
+    		if (timeList.get(i).getUserID() == Id) {
+    	    	tempList.add(timeList.get(i));
+    		}
+    	}
+    	return tempList;
+    }
+    
+    @PostMapping ("/api/user/{user_id}/availability")
+    public void add_time(@PathVariable(value = "user_id")int Id,@RequestParam (required=false) int start, @RequestParam (required=false) int end) {
+    	timeList.add(new Time(start, end, time_id, Id));
+    	time_id++;
+    }
 }
