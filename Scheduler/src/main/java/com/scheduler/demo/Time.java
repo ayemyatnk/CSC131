@@ -35,9 +35,10 @@ public class Time{
 	public void setEnd(int end) {
 		this.end = end;
 	}
-	/* Might not be necessary
 	public void setTimeID(int time_id) {
 		this.time_id = time_id;
 	}
-	*/
+	public void setUserID(int user_id) {
+		this.user_id = user_id;
+	}
 }

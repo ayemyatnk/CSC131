@@ -37,4 +37,7 @@ public class User {
 	public void setAge(int Age) {
 		this.Age = Age;
 	}
+	public void setId(int user_id) {
+		this.user_id = user_id;
+	}
 }
