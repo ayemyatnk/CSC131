@@ -111,10 +111,56 @@ public class SchedulerApplication {
     	return meetingList;
     }
     
+    @GetMapping ("/api/meeting/{meeting_id}")
+    public Meeting get_one_meeting(@PathVariable(value = "meeting_id")int Id) {
+    	return meetingList.get(Id);
+    }
+    
     @PostMapping ("/api/meeting")
     public void add_meeting(@RequestBody Meeting meeting) {
     	meeting.setMeetingId(meeting_id);
     	meetingList.add(meeting);
     	meeting_id++;
+    }
+    
+    @PutMapping ("/api/meeting/{meeting_id}")
+    public void edit_meeting(@PathVariable(value = "meeting_id")int Id, @RequestParam int start, @RequestParam int end) {
+    	for(int i = 0; i <meetingList.size(); i++) {
+    		if(meetingList.get(i).getMeetingID() == Id) {
+    			meetingList.get(i).setMeetingStart(start);
+				meetingList.get(i).setMeetingEnd(end);
+    		}
+    	}
+    }
+    
+    @DeleteMapping ("/api/meeting/{meeting_id}")
+    public void delete_meeting(@PathVariable(value = "meeting_id")int Id) {
+    	for(int i = 0; i <meetingList.size(); i++) {
+    		if(meetingList.get(i).getMeetingID() == Id) {
+    			meetingList.remove(i);
+    		}
+    	}
+    }
+    
+    //Support up to 4 users, more could be implemented
+    @GetMapping ("/api/timeslots")
+    public Time get_timeslots(@RequestParam int id1, @RequestParam(required = false) Integer id2, @RequestParam(required = false) Integer id3, @RequestParam(required = false) Integer id4) {
+    	int timeSlotStart = 0;
+    	int timeSlotEnd = 24;
+    	
+    	for(int i = 0; i < timeList.size(); i++) {
+    		if (timeList.get(i).getUserID() == id1 || (id2 != null &&timeList.get(i).getUserID() == id2) || (id3 != null &&timeList.get(i).getUserID() == id3) || (id4 != null &&timeList.get(i).getUserID() == id4)) {
+    	    	if (timeList.get(i).getStart() > timeSlotStart) {
+    	    		timeSlotStart = timeList.get(i).getStart();
+    	    	}
+    	    	if (timeList.get(i).getEnd() < timeSlotEnd) {
+    	    		timeSlotEnd = timeList.get(i).getEnd();
+    	    	}
+    		}
+    	}
+    	if (timeSlotStart > timeSlotEnd) {
+    		return new Time("No Time Slot Available");
+    	}
+    	return new Time(timeSlotStart, timeSlotEnd);
     }
 }

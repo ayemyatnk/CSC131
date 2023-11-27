@@ -5,9 +5,19 @@ public class Time{
 	private int end;
 	private int time_id;
 	private int user_id;
+	private String message;
 	
 	public Time(){
 		
+	}
+	
+	public Time(int start, int end) {
+		this.start = start;
+		this.end = end;
+	}
+	
+	public Time(String message) {
+		this.message = message;
 	}
 	
 	public Time(int start, int end, int time_id, int user_id) {
