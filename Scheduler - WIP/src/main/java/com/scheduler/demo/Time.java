@@ -1,0 +1,63 @@
+package com.scheduler.demo;
+
+import jakarta.persistence.*;
+
+@Entity
+public class Time{
+	@Id
+	@GeneratedValue (strategy = GenerationType.AUTO)
+	
+	private int start;
+	private int end;
+	private int time_id;
+	private int user_id;
+	private String message;
+	
+	public Time(){
+		
+	}
+	
+	public Time(int start, int end) {
+		this.start = start;
+		this.end = end;
+	}
+	
+	public Time(String message) {
+		this.message = message;
+	}
+	
+	public Time(int start, int end, int time_id, int user_id) {
+		this.start = start;
+		this.end = end;
+		this.time_id = time_id;
+		this.user_id = user_id;
+	}
+
+	public int getStart() {
+		return start;
+	}
+	public int getEnd() {
+		return end;
+	}
+	public int getTimeID() {
+		return time_id;
+	}
+	public int getUserID() {
+		return user_id;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setStart(int start) {
+		this.start = start;
+	}
+	public void setEnd(int end) {
+		this.end = end;
+	}
+	public void setTimeID(int time_id) {
+		this.time_id = time_id;
+	}
+	public void setUserID(int user_id) {
+		this.user_id = user_id;
+	}
+}
