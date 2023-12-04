@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 public class User {
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
-	
 	private int user_id;
 	private String Name;
 	private String Major;
@@ -15,11 +14,10 @@ public class User {
 	public User() {
 		
 	}
-	public User(String Name, String Major, int Age, int ID) {
+	public User(String Name, String Major, int Age) {
 		this.Name = Name;
 		this.Major = Major;
 		this.Age = Age;
-		this.user_id = ID;
 	}
 	
 	public String getName() {

@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 public class Meeting {
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
-	
 	private int meeting_id;
 	private int start;
 	private int end;
