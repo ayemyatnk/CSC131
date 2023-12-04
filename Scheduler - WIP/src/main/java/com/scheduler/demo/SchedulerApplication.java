@@ -1,4 +1,5 @@
 package com.scheduler.demo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,18 +10,18 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.*;
 
 @SpringBootApplication
 @RestController
 public class SchedulerApplication {
-	//List is temporary, for testing purpose
-	private ArrayList<User> userList = new ArrayList<User>();
-	private int id = 0;
-	private ArrayList<Time> timeList = new ArrayList<Time>();
-	private int time_id = 0;
-	private ArrayList<Meeting> meetingList = new ArrayList<Meeting>();
-	private int meeting_id = 0;
+	@Autowired
+	private UserRep userRep;
+	@Autowired
+	private TimeRep timeRep;
+	@Autowired
+	private MeetingRep meetingRep;
 	
     public static void main(String[] args) {
       SpringApplication.run(SchedulerApplication.class, args);
@@ -33,78 +34,56 @@ public class SchedulerApplication {
     
     // List starts out empty
     @GetMapping("/api/user")
-    public List<User> get_all_user() {
-    	return userList;
+    public Iterable<User> get_all_user() {
+    	return userRep.findAll();
     }
     
     @GetMapping ("/api/user/{user_id}")
-    public User get_one_user(@PathVariable(value = "user_id")int Id) {
-    	return userList.get(Id);
+    public Optional<User> get_one_user(@PathVariable(value = "user_id")int Id) {
+    	return userRep.findById(Id);
     }
     
     @PostMapping ("/api/user")
-    public void add_user(@RequestBody User user) {
-    	user.setId(id);
-    	userList.add(user);
-    	id++;
+    public @ResponseBody void add_user(@RequestBody User user) {
+    	userRep.save(user);
     }
     
     @PutMapping ("/api/user/{user_id}")
-    public void edit_user(@PathVariable(value = "user_id") int Id,@RequestParam (required=false) String name, @RequestParam (required=false) String major, @RequestParam (required=false) int age) {
-    	for(int i = 0; i < userList.size(); i++) {
-    		if (userList.get(i).getID() == Id) {
-    				userList.get(i).setName(name);
-    				userList.get(i).setMajor(major);
-    				userList.get(i).setAge(age);
-    		}
-    	}
+    public void edit_user(@PathVariable(value = "user_id") int Id,@RequestBody User user) {
+    	User oldUser = userRep.findById(Id).get();
+    	oldUser.setName(user.getName());
+    	oldUser.setAge(user.getAge());
+    	oldUser.setMajor(user.getMajor());
+    	userRep.save(oldUser);
     }
 
     @DeleteMapping ("/api/user/{user_id}")
     public void delete_user(@PathVariable(value = "user_id") int Id) {
-    	for(int i = 0; i < userList.size(); i++) {
-    		if (userList.get(i).getID() == Id) {
-    			userList.remove(i);
-    		}
-    	}
+    	userRep.deleteById(Id);
     }
     
     @GetMapping ("/api/user/{user_id}/availability")
-    public List<Time> get_time(@PathVariable(value = "user_id")int Id) {
-    	ArrayList<Time> tempList = new ArrayList<Time>();
-    	for(int i = 0; i < timeList.size(); i++) {
-    		if (timeList.get(i).getUserID() == Id) {
-    	    	tempList.add(timeList.get(i));
-    		}
-    	}
-    	return tempList;
+    public Iterable<Time> get_time(@PathVariable(value = "user_id")Integer Id){
+    	return timeRep.findByUserId(Id);
     }
     
     @PostMapping ("/api/user/{user_id}/availability")
     public void add_time(@PathVariable(value = "user_id")int Id, @RequestBody Time time) {
-    	time.setTimeID(time_id);
     	time.setUserID(Id);
-    	timeList.add(time);
-    	time_id++;
+    	timeRep.save(time);
     }
     
     @PutMapping ("/api/user/{user_id}/availability/{availability_id}")
-    public void edit_time(@PathVariable(value = "user_id")int Id, @PathVariable(value = "availability_id")int Time_Id, @RequestParam int start, @RequestParam int end) {
-    	for(int i = 0; i <timeList.size(); i++) {
-    		if(timeList.get(i).getTimeID() == Time_Id) {
-    			timeList.get(i).setStart(start);
-				timeList.get(i).setEnd(end);
-    		}
-    	}
+    public void edit_time(@PathVariable(value = "user_id")int Id, @PathVariable(value = "availability_id")int Time_Id, @RequestBody Time time) {
+    	Time oldTime = timeRep.findById(Time_Id).get();
+    	oldTime.setStart(time.getStart());
+    	oldTime.setEnd(time.getEnd());
+    	timeRep.save(oldTime);
     }
     
     @DeleteMapping ("/api/user/{user_id}/availability/{availability_id}")
     public void delete_time(@PathVariable(value = "user_id")int Id, @PathVariable(value = "availability_id")int Time_Id) {
-    	for(int i = 0; i <timeList.size(); i++) {
-    		if(timeList.get(i).getTimeID() == Time_Id) {
-    			timeList.remove(i);
-    		}
-    	}
+    	timeRep.deleteById(Time_Id);
     }
     @GetMapping ("/api/meeting")
     public List<Meeting> get_meeting() {
