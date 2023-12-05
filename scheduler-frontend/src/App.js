@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import MeetingList from "./MeetingList";
+import AddMeetingForm from "./AddMeetingForm";
+import EditMeetingForm from "./EditMeetingForm";
+import TimeList from "./TimeList";
+import AddTimeForm from "./AddTimeForm";
+import UserList from "./UserList";
+import AddUserForm from "./AddUserForm";
+import EditUserForm from "./EditUserForm";
+import EditTimeForm from "./EditTimeForm";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>
+        <h1>Meeting Scheduler App</h1>
+        {/* Meeting components */}
+        <MeetingList />
+        <AddMeetingForm />
+        <EditMeetingForm />
+      </div>
+
+      <div>
+        <h1>Availability Scheduler</h1>
+        {/* Time components */}
+        <TimeList />
+        <AddTimeForm />
+        <EditTimeForm />
+      </div>
+
+      <div>
+        <h1>User Management</h1>
+        {/* User components */}
+        <UserList />
+        <AddUserForm />
+        <EditUserForm />
+      </div>
     </div>
   );
 }
