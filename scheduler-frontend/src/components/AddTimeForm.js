@@ -22,7 +22,6 @@ const AddTimeForm = ({ onAvailabilityAdded }) => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Availability added:", data);
-        // Optionally update the local state or trigger a refetch of the availability list
         onAvailabilityAdded(data);
       })
       .catch((error) => console.error("Error adding availability:", error));

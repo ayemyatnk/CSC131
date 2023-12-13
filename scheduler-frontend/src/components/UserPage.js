@@ -6,12 +6,19 @@ import { USER_API } from "../api/api";
 const UserPage = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch(USER_API.GET_ALL_USERS)
       .then((response) => response.json())
-      .then((data) => setUsers(data))
-      .catch((error) => console.error("Error fetching users:", error));
+      .then((data) => {
+        setUsers(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+        setIsLoading(false);
+      });
   }, []);
 
   const handleUserClick = (user) => {
@@ -20,6 +27,8 @@ const UserPage = () => {
 
   const handleFormSubmit = async (newUser) => {
     try {
+      setIsLoading(true);
+
       if (selectedUser) {
         // Editing an existing user
         const response = await fetch(USER_API.EDIT_USER(selectedUser.user_id), {
@@ -56,13 +65,21 @@ const UserPage = () => {
       }
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div>
-      <UserList users={users} onUserClick={handleUserClick} />
-      <UserForm onSubmit={handleFormSubmit} initialValues={selectedUser} />
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <UserList users={users} onUserClick={handleUserClick} />
+          <UserForm onSubmit={handleFormSubmit} initialValues={selectedUser} />
+        </>
+      )}
     </div>
   );
 };

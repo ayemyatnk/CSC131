@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { MEETING_API } from "../api/api";
+import DeleteMeeting from "./DeleteMeeting";
 
 const EditMeetingForm = ({ meetingId, start, end, onUpdate }) => {
   const [newStart, setNewStart] = useState(start);
@@ -28,6 +29,24 @@ const EditMeetingForm = ({ meetingId, start, end, onUpdate }) => {
       .catch((error) => console.error("Error updating meeting:", error));
   };
 
+  const handleDelete = () => {
+    // You can implement any logic you need before deleting, e.g., confirmation dialog
+    // For now, let's directly delete the meeting
+    fetch(MEETING_API.DELETE_MEETING(meetingId), {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log(`Meeting with ID ${meetingId} deleted successfully.`);
+          // Optionally update the local state or trigger a refetch of the meeting list
+          onUpdate();
+        } else {
+          console.error(`Failed to delete meeting with ID ${meetingId}.`);
+        }
+      })
+      .catch((error) => console.error("Error deleting meeting:", error));
+  };
+
   return (
     <div>
       <h2>Edit Meeting</h2>
@@ -42,6 +61,9 @@ const EditMeetingForm = ({ meetingId, start, end, onUpdate }) => {
         </label>
         <button type="submit">Update Meeting</button>
       </form>
+
+      {/* Include the DeleteMeeting component with the onDelete callback */}
+      <DeleteMeeting meetingId={meetingId} onDelete={handleDelete} />
     </div>
   );
 };

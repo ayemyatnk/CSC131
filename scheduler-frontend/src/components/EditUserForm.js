@@ -10,7 +10,7 @@ const EditUserForm = ({ userId, name: initialName, major: initialMajor, age: ini
     event.preventDefault();
 
     // Submit form data to the backend for updating the user
-    fetch(USER_API.UPDATE_USER(userId), {
+    fetch(USER_API.EDIT_USER(userId), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +44,7 @@ const EditUserForm = ({ userId, name: initialName, major: initialMajor, age: ini
         </label>
         <label>
           Age:
-          <input type="text" value={age} onChange={(e) => setAge(e.target.value)} />
+          <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
         </label>
         <button type="submit">Update User</button>
       </form>
