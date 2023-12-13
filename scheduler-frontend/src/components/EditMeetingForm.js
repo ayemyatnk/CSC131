@@ -1,21 +1,29 @@
-// to edit existing meetings
 import React, { useState } from "react";
+import { MEETING_API } from "../api/api";
 
-const EditMeetingForm = ({ meetingId, start, end }) => {
+const EditMeetingForm = ({ meetingId, start, end, onUpdate }) => {
   const [newStart, setNewStart] = useState(start);
   const [newEnd, setNewEnd] = useState(end);
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Submit form data to the Spring Boot backend for updating the meeting
-    fetch(`http://localhost:8080/api/meeting/${meetingId}?start=${newStart}&end=${newEnd}`, {
+    // Submit form data to the backend for updating the meeting
+    fetch(MEETING_API.EDIT_MEETING(meetingId), {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        start: parseInt(newStart, 10),
+        end: parseInt(newEnd, 10),
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
         console.log("Meeting updated:", data);
         // Optionally update the local state or trigger a refetch of the meeting list
+        onUpdate();
       })
       .catch((error) => console.error("Error updating meeting:", error));
   };

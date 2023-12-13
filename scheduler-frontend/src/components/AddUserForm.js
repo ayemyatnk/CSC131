@@ -1,30 +1,38 @@
-// to edit existing users
 import React, { useState } from "react";
+import { USER_API } from "../api/api";
 
-const EditUserForm = ({ userId, name: initialName, major: initialMajor, age: initialAge, onUpdate }) => {
-  const [name, setName] = useState(initialName);
-  const [major, setMajor] = useState(initialMajor);
-  const [age, setAge] = useState(initialAge);
+const AddUserForm = ({ onUserAdded }) => {
+  const [name, setName] = useState("");
+  const [major, setMajor] = useState("");
+  const [age, setAge] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Submit form data to the Spring Boot backend for updating the user
-    fetch(`http://localhost:8080/api/user/${userId}?name=${name}&major=${major}&age=${parseInt(age, 10)}`, {
-      method: "PUT",
+    // Submit form data to the backend for adding a new user
+    fetch(USER_API.ADD_USER, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        major,
+        age: parseInt(age, 10), // Convert age to an integer
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("User updated:", data);
+        console.log("User added:", data);
         // Optionally update the local state or trigger a refetch of the user list
-        onUpdate();
+        onUserAdded(data);
       })
-      .catch((error) => console.error("Error updating user:", error));
+      .catch((error) => console.error("Error adding user:", error));
   };
 
   return (
     <div>
-      <h2>Edit User</h2>
+      <h2>Add User</h2>
       <form onSubmit={handleSubmit}>
         <label>
           Name:
@@ -38,10 +46,10 @@ const EditUserForm = ({ userId, name: initialName, major: initialMajor, age: ini
           Age:
           <input type="text" value={age} onChange={(e) => setAge(e.target.value)} />
         </label>
-        <button type="submit">Update User</button>
+        <button type="submit">Add User</button>
       </form>
     </div>
   );
 };
 
-export default EditUserForm;
+export default AddUserForm;

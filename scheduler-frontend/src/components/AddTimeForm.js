@@ -1,35 +1,36 @@
-// to add new meetings
 import React, { useState } from "react";
+import { USER_API } from "../api/api";
 
-const AddMeetingForm = () => {
+const AddTimeForm = ({ onAvailabilityAdded }) => {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Submit form data to the Spring Boot backend
-    fetch("http://localhost:8080/api/meeting", {
+    // Submit form data to the backend for adding a new availability
+    fetch(USER_API.ADD_USER_AVAILABILITY(1), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        start,
-        end,
+        start: parseInt(start, 10),
+        end: parseInt(end, 10),
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Meeting added:", data);
-        // Optionally update the local state or trigger a refetch of the meeting list
+        console.log("Availability added:", data);
+        // Optionally update the local state or trigger a refetch of the availability list
+        onAvailabilityAdded(data);
       })
-      .catch((error) => console.error("Error adding meeting:", error));
+      .catch((error) => console.error("Error adding availability:", error));
   };
 
   return (
     <div>
-      <h2>Add Meeting</h2>
+      <h2>Add Availability</h2>
       <form onSubmit={handleSubmit}>
         <label>
           Start:
@@ -39,10 +40,10 @@ const AddMeetingForm = () => {
           End:
           <input type="text" value={end} onChange={(e) => setEnd(e.target.value)} />
         </label>
-        <button type="submit">Add Meeting</button>
+        <button type="submit">Add Availability</button>
       </form>
     </div>
   );
 };
 
-export default AddMeetingForm;
+export default AddTimeForm;

@@ -1,13 +1,13 @@
 import React from "react";
-import MeetingList from "./MeetingList";
-import AddMeetingForm from "./AddMeetingForm";
-import EditMeetingForm from "./EditMeetingForm";
-import TimeList from "./TimeList";
-import AddTimeForm from "./AddTimeForm";
-import UserList from "./UserList";
-import AddUserForm from "./AddUserForm";
-import EditUserForm from "./EditUserForm";
-import EditTimeForm from "./EditTimeForm";
+import MeetingList from "./components/MeetingList";
+import AddMeetingForm from "./components/AddMeetingForm";
+import EditMeetingForm from "./components/EditMeetingForm";
+import TimeList from "./components/TimeList";
+import AddTimeForm from "./components/AddTimeForm";
+import UserList from "./components/UserList";
+import AddUserForm from "./components/AddUserForm";
+import EditUserForm from "./components/EditUserForm";
+import EditTimeForm from "./components/EditTimeForm";
 
 function App() {
   return (
