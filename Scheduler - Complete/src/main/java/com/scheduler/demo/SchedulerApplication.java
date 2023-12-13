@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.stereotype.Service;
-
 import java.util.*;
 
 @SpringBootApplication
@@ -65,7 +63,7 @@ public class SchedulerApplication {
     }
     
     @GetMapping ("/api/user/{user_id}/availability")
-    public Iterable<Time> get_time(@PathVariable(value = "user_id")Integer Id){
+    public List<Time> get_time(@PathVariable(value = "user_id")Integer Id){
     	return timeRep.findByUserId(Id);
     }
     
@@ -88,60 +86,68 @@ public class SchedulerApplication {
     	timeRep.deleteById(Time_Id);
     }
     @GetMapping ("/api/meeting")
-    public List<Meeting> get_meeting() {
-    	return meetingList;
+    public Iterable<Meeting> get_meeting() {
+    	return meetingRep.findAll();
     }
     
     @GetMapping ("/api/meeting/{meeting_id}")
-    public Meeting get_one_meeting(@PathVariable(value = "meeting_id")int Id) {
-    	return meetingList.get(Id);
+    public Optional<Meeting> get_one_meeting(@PathVariable(value = "meeting_id")int Id) {
+    	return meetingRep.findById(Id);
     }
     
     @PostMapping ("/api/meeting")
     public void add_meeting(@RequestBody Meeting meeting) {
-    	meeting.setMeetingId(meeting_id);
-    	meetingList.add(meeting);
-    	meeting_id++;
+    	meetingRep.save(meeting);
     }
     
     @PutMapping ("/api/meeting/{meeting_id}")
-    public void edit_meeting(@PathVariable(value = "meeting_id")int Id, @RequestParam int start, @RequestParam int end) {
-    	for(int i = 0; i <meetingList.size(); i++) {
-    		if(meetingList.get(i).getMeetingID() == Id) {
-    			meetingList.get(i).setMeetingStart(start);
-				meetingList.get(i).setMeetingEnd(end);
-    		}
-    	}
+    public void edit_meeting(@PathVariable(value = "meeting_id")int Id, @RequestBody Meeting meeting) {
+    	Meeting oldMeeting = meetingRep.findById(Id).get();
+    	oldMeeting.setMeetingStart(meeting.getStart());
+    	oldMeeting.setMeetingEnd(meeting.getEnd());
+    	meetingRep.save(oldMeeting);
     }
     
     @DeleteMapping ("/api/meeting/{meeting_id}")
     public void delete_meeting(@PathVariable(value = "meeting_id")int Id) {
-    	for(int i = 0; i <meetingList.size(); i++) {
-    		if(meetingList.get(i).getMeetingID() == Id) {
-    			meetingList.remove(i);
-    		}
-    	}
+    	meetingRep.deleteById(Id);
     }
     
     //Support up to 4 users, more could be implemented
     @GetMapping ("/api/timeslots")
-    public Time get_timeslots(@RequestParam int id1, @RequestParam(required = false) Integer id2, @RequestParam(required = false) Integer id3, @RequestParam(required = false) Integer id4) {
+    public CombinedTime get_timeslots(@RequestParam(value = "id1") int id1, @RequestParam(value = "id2", required = false) Integer id2, @RequestParam(value = "id3", required = false) Integer id3, @RequestParam(value = "id4", required = false) Integer id4) {
     	int timeSlotStart = 0;
     	int timeSlotEnd = 24;
     	
-    	for(int i = 0; i < timeList.size(); i++) {
-    		if (timeList.get(i).getUserID() == id1 || (id2 != null &&timeList.get(i).getUserID() == id2) || (id3 != null &&timeList.get(i).getUserID() == id3) || (id4 != null &&timeList.get(i).getUserID() == id4)) {
-    	    	if (timeList.get(i).getStart() > timeSlotStart) {
-    	    		timeSlotStart = timeList.get(i).getStart();
-    	    	}
-    	    	if (timeList.get(i).getEnd() < timeSlotEnd) {
-    	    		timeSlotEnd = timeList.get(i).getEnd();
-    	    	}
+    	List<Time> meeting = new ArrayList<>();
+    	if (timeRep.findByUserId(id1) != null) {
+    		meeting.addAll(timeRep.findByUserId(id1));
+    	}
+    	if (id2 != null) {
+    		if (timeRep.findByUserId(id2) != null)
+    			meeting.addAll(timeRep.findByUserId(id2));
+    	}
+    	if (id3 != null) {
+    		if (timeRep.findByUserId(id3) != null)
+    			meeting.addAll(timeRep.findByUserId(id3));
+    	}
+    	if (id4 != null) {
+    		if (timeRep.findByUserId(id4) != null)
+    			meeting.addAll(timeRep.findByUserId(id4));
+    	}
+    	
+    	for (int i = 0; i < meeting.size(); i++) {
+    		if (meeting.get(i).getStart() > timeSlotStart) {
+    			timeSlotStart = meeting.get(i).getStart();
+    		}
+    		if (meeting.get(i).getEnd() < timeSlotEnd) {
+    			timeSlotEnd = meeting.get(i).getEnd();
     		}
     	}
+    	
     	if (timeSlotStart > timeSlotEnd) {
-    		return new Time("No Time Slot Available");
+    		throw new IllegalArgumentException("There are no availabilities for selected users");
     	}
-    	return new Time(timeSlotStart, timeSlotEnd);
+    	return new CombinedTime(timeSlotStart, timeSlotEnd);
     }
 }
