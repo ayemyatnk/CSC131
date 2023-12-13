@@ -40,7 +40,8 @@ public class SchedulerApplication {
     
     @GetMapping ("/api/user/{user_id}")
     public Optional<User> get_one_user(@PathVariable(value = "user_id")int Id) {
-    	return userRep.findById(Id);
+    	return Optional.ofNullable(userRep.findById(Id)
+    		.orElseThrow(() -> new IllegalArgumentException("ERROR 404: User not found")));
     }
     
     @PostMapping ("/api/user")
@@ -50,20 +51,33 @@ public class SchedulerApplication {
     
     @PutMapping ("/api/user/{user_id}")
     public void edit_user(@PathVariable(value = "user_id") int Id,@RequestBody User user) {
-    	User oldUser = userRep.findById(Id).get();
-    	oldUser.setName(user.getName());
-    	oldUser.setAge(user.getAge());
-    	oldUser.setMajor(user.getMajor());
-    	userRep.save(oldUser);
+    	if (userRep.existsById(Id)) {
+    		User oldUser = userRep.findById(Id).get();
+    		oldUser.setName(user.getName());
+    		oldUser.setAge(user.getAge());
+    		oldUser.setMajor(user.getMajor());
+    		userRep.save(oldUser);
+    	}
+    	else {
+    		throw new IllegalArgumentException("ERROR 404: User not found");
+    	}
     }
 
     @DeleteMapping ("/api/user/{user_id}")
     public void delete_user(@PathVariable(value = "user_id") int Id) {
-    	userRep.deleteById(Id);
+    	if (userRep.existsById(Id)) {
+    		userRep.deleteById(Id);
+    	}
+    	else {
+    		throw new IllegalArgumentException("ERROR 404: User not found");
+    	}
     }
     
     @GetMapping ("/api/user/{user_id}/availability")
-    public List<Time> get_time(@PathVariable(value = "user_id")Integer Id){
+    public List<Time> get_time(@PathVariable(value = "user_id")Integer Id){	
+    	if(timeRep.findByUserId(Id).isEmpty()) 
+    		throw new IllegalArgumentException("ERROR 404: User not found");
+    		
     	return timeRep.findByUserId(Id);
     }
     
@@ -75,15 +89,25 @@ public class SchedulerApplication {
     
     @PutMapping ("/api/user/{user_id}/availability/{availability_id}")
     public void edit_time(@PathVariable(value = "user_id")int Id, @PathVariable(value = "availability_id")int Time_Id, @RequestBody Time time) {
-    	Time oldTime = timeRep.findById(Time_Id).get();
-    	oldTime.setStart(time.getStart());
-    	oldTime.setEnd(time.getEnd());
-    	timeRep.save(oldTime);
+    	if (timeRep.existsById(Time_Id)){
+    		Time oldTime = timeRep.findById(Time_Id).get();
+    		oldTime.setStart(time.getStart());
+    		oldTime.setEnd(time.getEnd());
+    		timeRep.save(oldTime);
+    	}
+    	else {
+    		throw new IllegalArgumentException("ERROR 404: Time not found");
+    	}
     }
     
     @DeleteMapping ("/api/user/{user_id}/availability/{availability_id}")
     public void delete_time(@PathVariable(value = "user_id")int Id, @PathVariable(value = "availability_id")int Time_Id) {
-    	timeRep.deleteById(Time_Id);
+    	if (timeRep.existsById(Time_Id)) {
+    		timeRep.deleteById(Time_Id);
+    	}
+    	else {
+    		throw new IllegalArgumentException("ERROR 404: Time not found");
+    	}
     }
     @GetMapping ("/api/meeting")
     public Iterable<Meeting> get_meeting() {
@@ -92,7 +116,8 @@ public class SchedulerApplication {
     
     @GetMapping ("/api/meeting/{meeting_id}")
     public Optional<Meeting> get_one_meeting(@PathVariable(value = "meeting_id")int Id) {
-    	return meetingRep.findById(Id);
+    	return Optional.ofNullable(meetingRep.findById(Id)
+        		.orElseThrow(() -> new IllegalArgumentException("ERROR 404: User not found")));
     }
     
     @PostMapping ("/api/meeting")
@@ -102,15 +127,25 @@ public class SchedulerApplication {
     
     @PutMapping ("/api/meeting/{meeting_id}")
     public void edit_meeting(@PathVariable(value = "meeting_id")int Id, @RequestBody Meeting meeting) {
-    	Meeting oldMeeting = meetingRep.findById(Id).get();
-    	oldMeeting.setMeetingStart(meeting.getStart());
-    	oldMeeting.setMeetingEnd(meeting.getEnd());
-    	meetingRep.save(oldMeeting);
+    	if(meetingRep.existsById(Id)) {
+    		Meeting oldMeeting = meetingRep.findById(Id).get();
+    		oldMeeting.setMeetingStart(meeting.getStart());
+    		oldMeeting.setMeetingEnd(meeting.getEnd());
+    		meetingRep.save(oldMeeting);
+    	}
+    	else {
+    		throw new IllegalArgumentException("ERROR 404: Meeting not found");
+    	}
     }
     
     @DeleteMapping ("/api/meeting/{meeting_id}")
     public void delete_meeting(@PathVariable(value = "meeting_id")int Id) {
-    	meetingRep.deleteById(Id);
+    	if (meetingRep.existsById(Id)) {
+    		meetingRep.deleteById(Id);
+    	}
+    	else {
+    		throw new IllegalArgumentException("ERROR 404: Meeting not found");
+    	}
     }
     
     //Support up to 4 users, more could be implemented
